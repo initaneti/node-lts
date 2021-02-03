@@ -10,13 +10,18 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Create unique identifier
+        id: ident
+        run: |
+          DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+          echo "::set-output name=date::$DATE"
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/latest
+          repository: ${{ github.repository }}/${{ steps.ident.outputs.date }}
           tag_with_ref: true
           context: .
           file: ./Dockerfile
